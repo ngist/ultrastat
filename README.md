@@ -1,13 +1,13 @@
 # Github Custom for Home Assistant
 
 [![](https://img.shields.io/github/license/ngist/ultrastat?style=for-the-badge)](LICENSE)
-[![](https://img.shields.io/github/actions/workflow/status/ngist/ultrastat/test.yml?branch=main&style=for-the-badge)](https://github.com/ngist/ultrastat/actions)
+[![](https://img.shields.io/github/actions/workflow/status/ngist/ultrastat/pythonpackage.yml?branch=main&style=for-the-badge)](https://github.com/ngist/ultrastat/actions)
 
 ## About
 
 This repo contains a custom component for [Home Assistant](https://www.home-assistant.io) that provides the ultimate thermostat control for your home.
-It brings together all of your temp sensors and temperature control appliances for your house and can seamlessly control between them. It has many 
-optional features that allow for optimal thermal control. 
+It brings together all of your temp sensors and temperature control appliances for your house and can seamlessly control between them. It has many
+optional features that allow for optimal thermal control.
 
 It also allows you to select between several different modes:
  1. max comfort: minimizes temperature fluctuations but may use more energy
