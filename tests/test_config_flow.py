@@ -2,20 +2,19 @@
 
 from unittest.mock import AsyncMock
 
+from custom_components.ultrastat.const import (
+    CONF_ADJACENCY,
+    CONF_BOILER,
+    CONF_ROOM_TEMP_ENTITIES,
+    DOMAIN,
+)
 import pytest
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
-from custom_components.ultrastat.const import (
-    DOMAIN,
-    CONF_ROOM_TEMP_ENTITIES,
-    CONF_BOILER,
-    CONF_ADJACENCY,
-)
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
-
-from tests.common import MockConfigEntry
 
 pytestmark = pytest.mark.usefixtures("mock_setup_entry")
 

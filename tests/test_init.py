@@ -1,20 +1,17 @@
 """Test the UltraStat integration."""
 
-import pytest
-
 from custom_components.ultrastat.const import (
-    DOMAIN,
-    CONF_ROOM_TEMP_ENTITIES,
-    CONF_BOILER,
     CONF_ADJACENCY,
+    CONF_BOILER,
+    CONF_ROOM_TEMP_ENTITIES,
+    DOMAIN,
 )
+import pytest
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+
 from homeassistant.components.climate import ClimateEntityFeature, HVACMode
-
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
-
-from tests.common import MockConfigEntry
 
 
 @pytest.mark.parametrize("platform", ["climate"])
