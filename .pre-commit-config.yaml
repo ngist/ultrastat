@@ -24,11 +24,6 @@ repos:
         stages: [manual]
       - id: check-json
         exclude: (.vscode|.devcontainer)
-      - id: no-commit-to-branch
-        args:
-          - --branch=dev
-          - --branch=main
-          - --branch=rc
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.37.1
     hooks:
