@@ -5,7 +5,7 @@
     "@ngist"
   ],
   "config_flow": true,
-  "documentation": "hhttps://github.com/ngist/ultrastat",
+  "documentation": "https://github.com/ngist/ultrastat",
   "integration_type": "helper",
   "iot_class": "calculated",
   "version": "0.0.1-alpha.1"
