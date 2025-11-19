@@ -2,10 +2,46 @@
   "config": {
     "step": {
       "user": {
-        "description": "New NEW_NAME Sensor",
+        "title": "New UltraStat",
+        "description": "UltraStat Settings",
         "data": {
-          "entity_id": "Input sensor",
-          "name": "Name"
+          "name": "Name",
+          "room_temp_entities": "Room Temperature Sensors",
+          "temperature_unit": "Temperature Unit",
+          "use_adjacency": "Use Room Adjacency?",
+          "has_boiler": "Has Boiler?"
+        },
+        "sections": {
+          "external_sensors": {
+            "name": "Outdoor Sensors(Optional)",
+            "description": "These sensors may improve performance",
+            "data": {
+              "outside_temp_entity": "Temperature Sensor",
+              "wind_speed_entity": "Wind Speed Sensor",
+              "wind_direction_entity": "Wind Direction Sensor",
+              "solar_flux_entity": "Solar Flux Sensor"
+            }
+          }
+        }
+      },
+      "room": {
+        "title": "Room Setup",
+        "description": "Configure heating/cooling entities for [%key:component::ultrastat::config::step::user::data::room_temp_entities%]",
+        "data": {
+          "name": "Name",
+          "room_temp_entities": "Room Temperature Sensors",
+          "temperature_unit": "Temperature Unit",
+          "use_adjacency": "Use Room Adjacency?",
+          "has_boiler": "Has Boiler?"
+        }
+      },
+      "boiler": {
+        "title": "Boiler Setup",
+        "description": "All settings are optional",
+        "data": {
+          "boiler_inlet_temp": "Inlet Temp",
+          "boiler_outlet_temp": "Outlet Temp",
+          "boiler_btuh": "BTUH Rating"
         }
       }
     }

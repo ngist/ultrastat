@@ -1,22 +1,56 @@
 {
-    "config": {
-        "step": {
-            "user": {
-                "data": {
-                    "entity_id": "Input sensor",
-                    "name": "Name"
-                },
-                "description": "New NEW_NAME Sensor"
+  "config": {
+    "step": {
+      "user": {
+        "title": "New UltraStat",
+        "description": "UltraStat Settings",
+        "data": {
+          "name": "Name",
+          "num_rooms": "Rooms to control",
+          "temperature_unit": "Temperature Unit",
+          "use_adjacency": "Use Room Adjacency?",
+          "has_boiler": "Has Boiler?"
+        },
+        "sections": {
+          "outdoor_sensors": {
+            "name": "Outdoor Sensors(Optional)",
+            "description": "These sensors may improve performance",
+            "data": {
+              "outside_temp_entity": "Temperature Sensor",
+              "wind_speed_entity": "Wind Speed Sensor",
+              "wind_direction_entity": "Wind Direction Sensor",
+              "solar_flux_entity": "Solar Flux Sensor"
             }
+          }
         }
-    },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "entity_id": "[%key:component::NEW_DOMAIN::config::step::user::description%]"
-                }
-            }
+      },
+      "room": {
+        "title": "Room Setup",
+        "description": "Configure heating/cooling entities for ",
+        "data": {
+          "heat_call_entity": "Heat call",
+          "cool_call_entity": "Cool call",
+          "climate_entity": "Climate Control"
         }
+      },
+      "boiler": {
+        "title": "Boiler Setup",
+        "description": "All settings are optional",
+        "data": {
+          "boiler_inlet_temp": "Inlet Temp",
+          "boiler_outlet_temp": "Outlet Temp",
+          "boiler_btuh": "BTUH Rating"
+        }
+      }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "entity_id": "[%key:component::ultrastat::config::step::user::description%]"
+        }
+      }
+    }
+  }
 }
