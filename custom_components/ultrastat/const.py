@@ -1,20 +1,41 @@
 """Constants for the UltraStat integration."""
 
+from enum import StrEnum
+
 DOMAIN = "ultrastat"
 
-# Room Entities
-CONF_AREA = "area"
-CONF_NUM_ROOMS = "num_rooms"
-CONF_TEMP_ENTITY = "temp_entity"
-CONF_BOILER_ZONE_ENTITY = "heat_call_entity"
+# General Purpose (used multiple forms)
+CONF_TEMP_ENTITIES = "temp_entities"
+CONF_HUMIDITY_ENTITY = "humidity_entity"
 CONF_CLIMATE_ENTITY = "climate_entity"
-CONF_ADJACENCY = "use_adjacency"
 
-# Global Entities
+# Main Settings
+CONF_CONTROL_MODE = "control_mode"
+CONF_NUM_ROOMS = "num_rooms"
+CONF_ADJACENCY = "use_adjacency"
 CONF_BOILER = "has_boiler"
-CONF_BOILER_BTUH = "boiler_btuh"
-CONF_BOILER_INTLET_TEMP_ENTITY = "boiler_inlet_temp"
-CONF_BOILER_OUTLET_TEMP_ENTITY = "boiler_outlet_temp"
 CONF_WIND_SPEED_ENTITY = "wind_speed_entity"
 CONF_WIND_DIRECTION_ENTITY = "wind_direction_entity"
 CONF_SOLAR_FLUX_ENTITY = "solar_flux_entity"
+
+# Room Specific Settings
+CONF_AREA = "area"
+CONF_HEATING_CALL_ENTITY = "heat_call_entity"
+CONF_COOLING_CALL_ENTITY = "cooling_call_entity"
+CONF_DEHUMIDIFY_CALL_ENTITY = "dehumidify_call_entity"
+CONF_HUMIDIFY_CALL_ENTITY = "humidify_call_entity"
+
+# Boiler Specific Settings
+CONF_BOILER_BTUH = "boiler_btuh"
+CONF_BOILER_METER = "boiler_meter"
+CONF_BOILER_UNIT_COST = "boiler_unit_cost"
+CONF_BOILER_INTLET_TEMP_ENTITY = "boiler_inlet_temp"
+CONF_BOILER_OUTLET_TEMP_ENTITY = "boiler_outlet_temp"
+
+
+class ControlMode(StrEnum):
+    """Thermostat Modes."""
+
+    COMFORT = "Comfort"
+    ECO = "Eco"
+    BUDGET = "Budget"

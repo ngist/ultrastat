@@ -8,6 +8,7 @@ import voluptuous as vol
 
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.utility_meter import DOMAIN as UTILITY_METER_DOMAIN
 from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
@@ -24,17 +25,25 @@ from .const import (
     DOMAIN,
     CONF_AREA,
     CONF_NUM_ROOMS,
-    CONF_BOILER_ZONE_ENTITY,
+    CONF_HEATING_CALL_ENTITY,
+    CONF_COOLING_CALL_ENTITY,
+    CONF_DEHUMIDIFY_CALL_ENTITY,
+    CONF_HUMIDIFY_CALL_ENTITY,
     CONF_CLIMATE_ENTITY,
-    CONF_TEMP_ENTITY,
+    CONF_TEMP_ENTITIES,
+    CONF_HUMIDITY_ENTITY,
     CONF_BOILER,
     CONF_BOILER_BTUH,
+    CONF_BOILER_METER,
+    CONF_BOILER_UNIT_COST,
     CONF_BOILER_INTLET_TEMP_ENTITY,
     CONF_BOILER_OUTLET_TEMP_ENTITY,
     CONF_WIND_SPEED_ENTITY,
     CONF_SOLAR_FLUX_ENTITY,
     CONF_WIND_DIRECTION_ENTITY,
     CONF_ADJACENCY,
+    CONF_CONTROL_MODE,
+    ControlMode,
 )
 
 MAIN_SCHEMA = vol.Schema(
@@ -42,21 +51,38 @@ MAIN_SCHEMA = vol.Schema(
         vol.Required(CONF_NAME): selector.TextSelector(),
         vol.Required(CONF_NUM_ROOMS): selector.NumberSelector({"min": 1, "step": 1}),
         vol.Required(
+            CONF_CONTROL_MODE,
+            default=ControlMode.COMFORT,
+        ): selector.SelectSelector(
+            selector.SelectSelectorConfig(
+                options=list(ControlMode),
+                mode=selector.SelectSelectorMode.DROPDOWN,
+            ),
+        ),
+        vol.Required(
             CONF_TEMPERATURE_UNIT,
             default=UnitOfTemperature.FAHRENHEIT,
         ): selector.SelectSelector(
             selector.SelectSelectorConfig(
                 options=[UnitOfTemperature.FAHRENHEIT, UnitOfTemperature.CELSIUS],
-                mode=selector.SelectSelectorMode.LIST,
+                mode=selector.SelectSelectorMode.DROPDOWN,
             ),
         ),
-        vol.Required("outdoor_sensors", description="Outdoor Sensors"): section(
+        vol.Required(CONF_BOILER, default=False): bool,
+        # vol.Required(CONF_ADJACENCY, default=False): bool, #TODO add this feature later
+        vol.Required("outdoor_sensors"): section(
             vol.Schema(
                 {
-                    vol.Optional(CONF_TEMP_ENTITY): selector.EntitySelector(
+                    vol.Optional(CONF_TEMP_ENTITIES): selector.EntitySelector(
                         selector.EntitySelectorConfig(
                             domain=SENSOR_DOMAIN,
                             device_class=SensorDeviceClass.TEMPERATURE,
+                        )
+                    ),
+                    vol.Optional(CONF_HUMIDITY_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=SENSOR_DOMAIN,
+                            device_class=SensorDeviceClass.HUMIDITY,
                         )
                     ),
                     vol.Optional(CONF_WIND_SPEED_ENTITY): selector.EntitySelector(
@@ -81,27 +107,66 @@ MAIN_SCHEMA = vol.Schema(
             ),
             {"collapsed": True},
         ),
-        vol.Required(CONF_BOILER, default=False): bool,
-        # vol.Required(CONF_ADJACENCY, default=False): bool, #TODO add this feature later
     }
 )
 
 BOILER_SCHEMA = vol.Schema(
     {
-        vol.Optional(CONF_BOILER_BTUH): selector.NumberSelector(
-            {"min": 0, "max": 500000, "unit_of_measurement": UnitOfPower.BTU_PER_HOUR}
-        ),
-        vol.Optional(CONF_BOILER_INTLET_TEMP_ENTITY): selector.EntitySelector(
+        vol.Required(CONF_HEATING_CALL_ENTITY): selector.EntitySelector(
             selector.EntitySelectorConfig(
-                domain=SENSOR_DOMAIN,
-                device_class=SensorDeviceClass.TEMPERATURE,
+                domain=SWITCH_DOMAIN,
+                multiple=True,
             )
         ),
-        vol.Optional(CONF_BOILER_OUTLET_TEMP_ENTITY): selector.EntitySelector(
-            selector.EntitySelectorConfig(
-                domain=SENSOR_DOMAIN,
-                device_class=SensorDeviceClass.TEMPERATURE,
-            )
+        vol.Required("temp_sensors"): section(
+            vol.Schema(
+                {
+                    vol.Optional(
+                        CONF_BOILER_INTLET_TEMP_ENTITY
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=SENSOR_DOMAIN,
+                            device_class=SensorDeviceClass.TEMPERATURE,
+                        )
+                    ),
+                    vol.Optional(
+                        CONF_BOILER_OUTLET_TEMP_ENTITY
+                    ): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=SENSOR_DOMAIN,
+                            device_class=SensorDeviceClass.TEMPERATURE,
+                        )
+                    ),
+                }
+            ),
+            {"collapsed": True},
+        ),
+        vol.Required("energy_settings"): section(
+            vol.Schema(
+                {
+                    vol.Optional(CONF_BOILER_BTUH): selector.NumberSelector(
+                        {
+                            "min": 0,
+                            "max": 500000,
+                            "unit_of_measurement": UnitOfPower.BTU_PER_HOUR,
+                        }
+                    ),
+                    vol.Optional(CONF_BOILER_METER): selector.EntitySelector(
+                        selector.EntitySelectorConfig(
+                            domain=UTILITY_METER_DOMAIN,
+                        )
+                    ),
+                    vol.Optional(CONF_BOILER_UNIT_COST): selector.NumberSelector(
+                        {
+                            "min": 0.0,
+                            "max": 100.0,
+                            "step": 0.01,
+                            "unit_of_measurement": "$/Kbtu",
+                        }
+                    ),
+                }
+            ),
+            {"collapsed": True},
         ),
     }
 )
@@ -109,17 +174,70 @@ BOILER_SCHEMA = vol.Schema(
 ROOM_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_AREA): selector.AreaSelector(),
-        vol.Required(CONF_TEMP_ENTITY): selector.EntitySelector(
+        vol.Required(CONF_TEMP_ENTITIES): selector.EntitySelector(
             selector.EntitySelectorConfig(
                 domain=SENSOR_DOMAIN,
                 device_class=SensorDeviceClass.TEMPERATURE,
+                multiple=True,
             )
         ),
-        vol.Optional(CONF_BOILER_ZONE_ENTITY): selector.EntitySelector(
-            selector.EntitySelectorConfig(domain=SWITCH_DOMAIN)
+        vol.Optional(CONF_HUMIDITY_ENTITY): selector.EntitySelector(
+            selector.EntitySelectorConfig(
+                domain=SENSOR_DOMAIN,
+                device_class=SensorDeviceClass.HUMIDITY,
+            )
         ),
-        vol.Optional(CONF_CLIMATE_ENTITY): selector.EntitySelector(
-            selector.EntitySelectorConfig(domain=CLIMATE_DOMAIN)
+        vol.Required("heating"): section(
+            vol.Schema(
+                {
+                    vol.Optional(CONF_HEATING_CALL_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=SWITCH_DOMAIN)
+                    ),
+                    vol.Optional(CONF_CLIMATE_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=CLIMATE_DOMAIN)
+                    ),
+                }
+            ),
+            {"collapsed": True},
+        ),
+        vol.Required("cooling"): section(
+            vol.Schema(
+                {
+                    vol.Optional(CONF_COOLING_CALL_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=SWITCH_DOMAIN)
+                    ),
+                    vol.Optional(CONF_CLIMATE_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=CLIMATE_DOMAIN)
+                    ),
+                }
+            ),
+            {"collapsed": True},
+        ),
+        vol.Required("humidification"): section(
+            vol.Schema(
+                {
+                    vol.Optional(CONF_HUMIDIFY_CALL_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=SWITCH_DOMAIN)
+                    ),
+                    vol.Optional(CONF_CLIMATE_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=CLIMATE_DOMAIN)
+                    ),
+                }
+            ),
+            {"collapsed": True},
+        ),
+        vol.Required("dehumidification"): section(
+            vol.Schema(
+                {
+                    vol.Optional(CONF_DEHUMIDIFY_CALL_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=SWITCH_DOMAIN)
+                    ),
+                    vol.Optional(CONF_CLIMATE_ENTITY): selector.EntitySelector(
+                        selector.EntitySelectorConfig(domain=CLIMATE_DOMAIN)
+                    ),
+                }
+            ),
+            {"collapsed": True},
         ),
     }
 )

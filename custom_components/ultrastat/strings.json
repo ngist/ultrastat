@@ -6,17 +6,19 @@
         "description": "UltraStat Settings",
         "data": {
           "name": "Name",
-          "room_temp_entities": "Room Temperature Sensors",
+          "num_rooms": "Rooms to control",
+          "control_mode": "Control Mode",
           "temperature_unit": "Temperature Unit",
           "use_adjacency": "Use Room Adjacency?",
           "has_boiler": "Has Boiler?"
         },
         "sections": {
-          "external_sensors": {
+          "outdoor_sensors": {
             "name": "Outdoor Sensors(Optional)",
             "description": "These sensors may improve performance",
             "data": {
-              "outside_temp_entity": "Temperature Sensor",
+              "temp_entities": "Temperature Sensor",
+              "humidity_entity": "Humidity Sensor",
               "wind_speed_entity": "Wind Speed Sensor",
               "wind_direction_entity": "Wind Direction Sensor",
               "solar_flux_entity": "Solar Flux Sensor"
@@ -26,22 +28,70 @@
       },
       "room": {
         "title": "Room Setup",
-        "description": "Configure heating/cooling entities for [%key:component::ultrastat::config::step::user::data::room_temp_entities%]",
+        "description": "Configure heating/cooling entities for x",
         "data": {
-          "name": "Name",
-          "room_temp_entities": "Room Temperature Sensors",
-          "temperature_unit": "Temperature Unit",
-          "use_adjacency": "Use Room Adjacency?",
-          "has_boiler": "Has Boiler?"
+          "area": "Area",
+          "temp_entities": "Temperature Sensor(s)",
+          "humidity_entity": "Humidity Sensor"
+        },
+        "sections": {
+          "heating": {
+            "name": "Heating Controls",
+            "description": "Climate entities can be reused in cooling, etc if they support those features.",
+            "data": {
+              "heat_call_entity": "Heating Call",
+              "climate_entity": "Climate Control Entity"
+            }
+          },
+          "cooling": {
+            "name": "Cooling Controls",
+            "description": "Climate entities can be reused in heating, etc if they support those features.",
+            "data": {
+              "cooling_call_entity": "Cooling Call",
+              "climate_entity": "Climate Control Entity"
+            }
+          },
+          "humidification": {
+            "name": "Humidification Controls",
+            "description": "Climate entities can be reused in heating, etc if they support those features.",
+            "data": {
+              "humidify_call_entity": "Humidify Call",
+              "climate_entity": "Climate Control Entity"
+            }
+          },
+          "dehumidification": {
+            "name": "Dehumidification Controls",
+            "description": "Climate entities can be reused in heating, etc if they support those features.",
+            "data": {
+              "dehumidify_call_entity": "Dehumidify Call",
+              "climate_entity": "Climate Control Entity"
+            }
+          }
         }
       },
       "boiler": {
         "title": "Boiler Setup",
-        "description": "All settings are optional",
         "data": {
-          "boiler_inlet_temp": "Inlet Temp",
-          "boiler_outlet_temp": "Outlet Temp",
-          "boiler_btuh": "BTUH Rating"
+          "heat_call_entity": "Boiler zone controls(Input All)"
+        },
+        "sections": {
+          "energy_settings": {
+            "name": "Energy Settings(optional)",
+            "description": "These settings are only used in Eco Mode or Budget Mode, if an energy meter is specified it needs to be one that exclusively measures the boiler, if you don't have such a meter is better to leave this blank than to use your main utility meter, energy use will be estimated based on the BTUH rating.",
+            "data": {
+              "boiler_btuh": "BTUH Rating",
+              "boiler_unit_cost": "Unit Cost",
+              "boiler_meter": "Utility Meter(boiler only)"
+            }
+          },
+          "temp_sensors": {
+            "name": "Temp Sensors(optional)",
+            "description": "Specifying one or both of these will help the system better estimate heatflow to each zone and help reduce temperature ripple.",
+            "data": {
+              "boiler_inlet_temp": "Inlet Temp",
+              "boiler_outlet_temp": "Outlet Temp"
+            }
+          }
         }
       }
     }
