@@ -123,7 +123,7 @@ BOILER_SCHEMA = vol.Schema(
                 multiple=True,
             )
         ),
-        vol.Required("temp_sensors"): section(
+        vol.Optional("temp_sensors"): section(
             vol.Schema(
                 {
                     vol.Optional(
@@ -146,7 +146,7 @@ BOILER_SCHEMA = vol.Schema(
             ),
             {"collapsed": True},
         ),
-        vol.Required("energy_settings"): section(
+        vol.Optional("energy_settings"): section(
             vol.Schema(
                 {
                     vol.Optional(CONF_BOILER_BTUH): selector.NumberSelector(
@@ -270,6 +270,17 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             self.data = user_input
             self.data["room_conf"] = []
+            self.added_temp_sensors = (
+                set([self.data[CONF_TEMP_ENTITIES]])
+                if CONF_TEMP_ENTITIES in self.data
+                else set()
+            )
+            self.added_humidity_sensors = (
+                set([self.data[CONF_HUMIDITY_ENTITY]])
+                if CONF_HUMIDITY_ENTITY in self.data
+                else set()
+            )
+            self.added_areas = set()
             self.data[CONF_ADJACENCY] = False  # TODO Remove once adjacency is supported
             if self.data[CONF_BOILER]:
                 return await self.async_step_boiler()
@@ -282,13 +293,39 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Configure boiler options."""
+        errors = {}
+        reused_temp = set()
         if user_input is not None:
-            # Input is valid, set data.
-            self.data["boiler_conf"] = user_input
-            # Return the form of the next step.
-            return await self.async_step_room()
+            boiler_temp_entities = []
+            if CONF_BOILER_INTLET_TEMP_ENTITY in user_input:
+                boiler_temp_entities.append(user_input[CONF_BOILER_INTLET_TEMP_ENTITY])
+            if CONF_BOILER_OUTLET_TEMP_ENTITY in user_input:
+                boiler_temp_entities.append(user_input[CONF_BOILER_OUTLET_TEMP_ENTITY])
 
-        return self.async_show_form(step_id="boiler", data_schema=BOILER_SCHEMA)
+            same_temp_entity_used = len(boiler_temp_entities) > len(
+                set(boiler_temp_entities)
+            )
+            reused_temp = (
+                set(boiler_temp_entities)
+                if same_temp_entity_used
+                else set(boiler_temp_entities) & self.added_temp_sensors
+            )
+            if reused_temp:
+                errors["base"] = "temp_sensor_reused"
+
+            if not errors:
+                # Input is valid, set data.
+                self.data["boiler_conf"] = user_input
+                self.added_temp_sensors |= set(boiler_temp_entities)
+                # Return the form of the next step.
+                return await self.async_step_room()
+
+        return self.async_show_form(
+            step_id="boiler",
+            data_schema=BOILER_SCHEMA,
+            errors=errors,
+            description_placeholders={"reused_temp": reused_temp},
+        )
 
     async def async_step_adjacency(
         self, user_input: dict[str, Any] | None = None
@@ -308,17 +345,47 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Captures configuration of thermal controls in each room."""
+        errors = {}
+        reused_temp = set()
+        reused_humidity = set()
+        reused_area = set()
         if user_input is not None:
-            # Input is valid, set data.
-            self.data["room_conf"].append(user_input)
-            if len(self.data["room_conf"]) == self.data[CONF_NUM_ROOMS]:
-                if self.data[CONF_ADJACENCY]:
-                    return await self.async_step_adjacency()
+            reused_area = set(user_input[CONF_AREA]) & self.added_areas
+            if reused_area:
+                errors["area_reused"] = "area_reused"
 
-                return self.async_create_entry(
-                    title=self.data[CONF_NAME], data=self.data
+            reused_temp = set(user_input[CONF_TEMP_ENTITIES]) & self.added_temp_sensors
+            if reused_temp:
+                errors["temp_reused"] = "temp_sensor_reused"
+
+            if CONF_HUMIDITY_ENTITY in user_input:
+                reused_humidity = (
+                    set(user_input[CONF_HUMIDITY_ENTITY]) & self.added_temp_sensors
                 )
-            # Return the form of the next step.
-            return await self.async_step_room()
+                if reused_humidity:
+                    errors["humidity_reused"] = "humidity_sensor_reused"
 
-        return self.async_show_form(step_id="room", data_schema=ROOM_SCHEMA)
+            if not errors:
+                # Input is valid, set data.
+                self.data["room_conf"].append(user_input)
+
+                if len(self.data["room_conf"]) == self.data[CONF_NUM_ROOMS]:
+                    if self.data[CONF_ADJACENCY]:
+                        return await self.async_step_adjacency()
+
+                    return self.async_create_entry(
+                        title=self.data[CONF_NAME], data=self.data
+                    )
+                # Return the form of the next step.
+                return await self.async_step_room()
+
+        return self.async_show_form(
+            step_id="room",
+            data_schema=ROOM_SCHEMA,
+            errors=errors,
+            description_placeholders={
+                "reused_temp": reused_temp,
+                "reused_humidity": reused_humidity,
+                "reused_area": reused_area,
+            },
+        )

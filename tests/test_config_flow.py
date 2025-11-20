@@ -124,7 +124,7 @@ async def test_minimal_config_flow(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] is None
+    assert not result["errors"]
 
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
@@ -133,7 +133,7 @@ async def test_minimal_config_flow(
     await hass.async_block_till_done()
 
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] is None
+    assert not result["errors"]
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         ROOM_1_SETTINGS,
@@ -166,7 +166,7 @@ async def test_maximal_config_flow(
         DOMAIN, context={"source": config_entries.SOURCE_USER}
     )
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] is None
+    assert not result["errors"]
 
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
@@ -176,7 +176,7 @@ async def test_maximal_config_flow(
 
     # Boiler Settings Step
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] is None
+    assert not result["errors"]
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         BOILER_SETTINGS_MAXIMAL,
@@ -185,7 +185,7 @@ async def test_maximal_config_flow(
 
     # ROOM 1
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] is None
+    assert not result["errors"]
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         ROOM_1_SETTINGS,
@@ -194,7 +194,7 @@ async def test_maximal_config_flow(
 
     # ROOM 2
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] is None
+    assert not result["errors"]
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         ROOM_2_SETTINGS,
@@ -203,7 +203,7 @@ async def test_maximal_config_flow(
 
     # ROOM 3
     assert result["type"] is FlowResultType.FORM
-    assert result["errors"] is None
+    assert not result["errors"]
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         ROOM_3_SETTINGS,
