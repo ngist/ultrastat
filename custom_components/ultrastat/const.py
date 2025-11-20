@@ -25,6 +25,10 @@ CONF_HEATING_CALL_ENTITY = "heat_call_entity"
 CONF_COOLING_CALL_ENTITY = "cooling_call_entity"
 CONF_DEHUMIDIFY_CALL_ENTITY = "dehumidify_call_entity"
 CONF_HUMIDIFY_CALL_ENTITY = "humidify_call_entity"
+CONF_HEATING = "heating"
+CONF_COOLING = "cooling"
+CONF_HUMIDIFICATION = "humidification"
+CONF_DEHUMIDIFICATION = "dehumidification"
 
 # Boiler Specific Settings
 CONF_BOILER_BTUH = "boiler_btuh"

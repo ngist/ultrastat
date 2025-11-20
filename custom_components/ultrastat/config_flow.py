@@ -33,8 +33,12 @@ from .const import (
     CONF_CLIMATE_ENTITY,
     CONF_CONTROL_MODE,
     CONF_COOLING_CALL_ENTITY,
+    CONF_COOLING,
+    CONF_DEHUMIDIFICATION,
     CONF_DEHUMIDIFY_CALL_ENTITY,
     CONF_HEATING_CALL_ENTITY,
+    CONF_HEATING,
+    CONF_HUMIDIFICATION,
     CONF_HUMIDIFY_CALL_ENTITY,
     CONF_HUMIDITY_ENTITY,
     CONF_NUM_ROOMS,
@@ -71,7 +75,7 @@ MAIN_SCHEMA = vol.Schema(
         ),
         vol.Required(CONF_BOILER, default=False): bool,
         # vol.Required(CONF_ADJACENCY, default=False): bool, #TODO add this feature later
-        vol.Required(CONF_OUTDOOR_SENSORS): section(
+        vol.Optional(CONF_OUTDOOR_SENSORS): section(
             vol.Schema(
                 {
                     vol.Optional(CONF_TEMP_ENTITIES): selector.EntitySelector(
@@ -188,7 +192,7 @@ ROOM_SCHEMA = vol.Schema(
                 device_class=SensorDeviceClass.HUMIDITY,
             )
         ),
-        vol.Optional("heating"): section(
+        vol.Optional(CONF_HEATING): section(
             vol.Schema(
                 {
                     vol.Optional(CONF_HEATING_CALL_ENTITY): selector.EntitySelector(
@@ -201,7 +205,7 @@ ROOM_SCHEMA = vol.Schema(
             ),
             {"collapsed": True},
         ),
-        vol.Optional("cooling"): section(
+        vol.Optional(CONF_COOLING): section(
             vol.Schema(
                 {
                     vol.Optional(CONF_COOLING_CALL_ENTITY): selector.EntitySelector(
@@ -214,7 +218,7 @@ ROOM_SCHEMA = vol.Schema(
             ),
             {"collapsed": True},
         ),
-        vol.Optional("humidification"): section(
+        vol.Optional(CONF_HUMIDIFICATION): section(
             vol.Schema(
                 {
                     vol.Optional(CONF_HUMIDIFY_CALL_ENTITY): selector.EntitySelector(
@@ -227,7 +231,7 @@ ROOM_SCHEMA = vol.Schema(
             ),
             {"collapsed": True},
         ),
-        vol.Optional("dehumidification"): section(
+        vol.Optional(CONF_DEHUMIDIFICATION): section(
             vol.Schema(
                 {
                     vol.Optional(CONF_DEHUMIDIFY_CALL_ENTITY): selector.EntitySelector(
