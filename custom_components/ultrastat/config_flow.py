@@ -273,17 +273,18 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             self.data = user_input
             self.data["room_conf"] = []
-            self.added_temp_sensors = (
-                set([self.data[CONF_TEMP_ENTITIES]])
-                if CONF_TEMP_ENTITIES in self.data
-                else set()
-            )
-            self.added_humidity_sensors = (
-                set([self.data[CONF_HUMIDITY_ENTITY]])
-                if CONF_HUMIDITY_ENTITY in self.data
-                else set()
-            )
+            self.added_temp_sensors = set()
+            self.added_humidity_sensors = set()
             self.added_areas = set()
+            if CONF_OUTDOOR_SENSORS in user_input:
+                if CONF_TEMP_ENTITIES in user_input[CONF_OUTDOOR_SENSORS]:
+                    self.added_temp_sensors.add(
+                        user_input[CONF_OUTDOOR_SENSORS][CONF_TEMP_ENTITIES]
+                    )
+                if CONF_HUMIDITY_ENTITY in user_input[CONF_OUTDOOR_SENSORS]:
+                    self.added_humidity_sensors.add(
+                        user_input[CONF_OUTDOOR_SENSORS][CONF_HUMIDITY_ENTITY]
+                    )
             self.data[CONF_ADJACENCY] = False  # TODO Remove once adjacency is supported
             if self.data[CONF_BOILER]:
                 return await self.async_step_boiler()
@@ -299,11 +300,17 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         errors = {}
         reused_temp = set()
         if user_input is not None:
+            # Do validation
             boiler_temp_entities = []
-            if CONF_BOILER_INTLET_TEMP_ENTITY in user_input:
-                boiler_temp_entities.append(user_input[CONF_BOILER_INTLET_TEMP_ENTITY])
-            if CONF_BOILER_OUTLET_TEMP_ENTITY in user_input:
-                boiler_temp_entities.append(user_input[CONF_BOILER_OUTLET_TEMP_ENTITY])
+            if "temp_sensors" in user_input:
+                if CONF_BOILER_INTLET_TEMP_ENTITY in user_input["temp_sensors"]:
+                    boiler_temp_entities.append(
+                        user_input["temp_sensors"][CONF_BOILER_INTLET_TEMP_ENTITY]
+                    )
+                if CONF_BOILER_OUTLET_TEMP_ENTITY in user_input["temp_sensors"]:
+                    boiler_temp_entities.append(
+                        user_input["temp_sensors"][CONF_BOILER_OUTLET_TEMP_ENTITY]
+                    )
 
             same_temp_entity_used = len(boiler_temp_entities) > len(
                 set(boiler_temp_entities)
@@ -353,24 +360,27 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         reused_humidity = set()
         reused_area = set()
         if user_input is not None:
-            reused_area = set(user_input[CONF_AREA]) & self.added_areas
-            if reused_area:
+            # Do validation
+            if user_input[CONF_AREA] in self.added_areas:
+                reused_area = set([user_input[CONF_AREA]])
                 errors["area_reused"] = "area_reused"
 
             reused_temp = set(user_input[CONF_TEMP_ENTITIES]) & self.added_temp_sensors
             if reused_temp:
-                errors["temp_reused"] = "temp_sensor_reused"
+                errors["temp_sensor_reused"] = "temp_sensor_reused"
 
             if CONF_HUMIDITY_ENTITY in user_input:
-                reused_humidity = (
-                    set(user_input[CONF_HUMIDITY_ENTITY]) & self.added_temp_sensors
-                )
-                if reused_humidity:
-                    errors["humidity_reused"] = "humidity_sensor_reused"
+                if user_input[CONF_HUMIDITY_ENTITY] in self.added_humidity_sensors:
+                    reused_humidity = user_input[CONF_HUMIDITY_ENTITY]
+                    errors["humidity_sensor_reused"] = "humidity_sensor_reused"
 
             if not errors:
                 # Input is valid, set data.
                 self.data["room_conf"].append(user_input)
+                self.added_areas.add(user_input[CONF_AREA])
+                self.added_temp_sensors |= set(user_input[CONF_TEMP_ENTITIES])
+                if CONF_HUMIDITY_ENTITY in user_input:
+                    self.added_humidity_sensors.add(user_input[CONF_HUMIDITY_ENTITY])
 
                 if len(self.data["room_conf"]) == self.data[CONF_NUM_ROOMS]:
                     if self.data[CONF_ADJACENCY]:

@@ -71,6 +71,7 @@ BOILER_SETTINGS_MINIMAL = {
 
 BOILER_SETTINGS_MAXIMAL = {
     CONF_HEATING_CALL_ENTITY: ["switch.zone1"],
+    CONF_AREA: ["area.living_room", "area.kitchen"],
     "temp_sensors": {
         CONF_BOILER_INTLET_TEMP_ENTITY: "sensor.inlet_temp",
         CONF_BOILER_OUTLET_TEMP_ENTITY: "sensor.outlet_temp",
@@ -90,6 +91,7 @@ ROOM_2_SETTINGS = {
     CONF_AREA: "area.kitchen",
     CONF_TEMP_ENTITIES: ["sensor.room2_temp"],
 }
+
 ROOM_3_SETTINGS = {
     CONF_AREA: "area.bedroom",
     CONF_TEMP_ENTITIES: ["sensor.room3_temp"],
@@ -224,6 +226,98 @@ async def test_maximal_config_flow(
     assert config_entry.data == expected
     assert config_entry.options == {}
     assert config_entry.title == "My ultrastat"
+
+
+ROOM_1_SETTINGS_HUMIDITY = {
+    CONF_AREA: "area.living_room",
+    CONF_TEMP_ENTITIES: ["sensor.room1_temp"],
+    CONF_HUMIDITY_ENTITY: "sensor.room1_humidity",
+}
+ROOM_2_DUPE_AREA = {
+    CONF_AREA: "area.living_room",
+    CONF_TEMP_ENTITIES: ["sensor.room2_temp"],
+}
+ROOM_2_DUPE_TEMP_INSIDE = {
+    CONF_AREA: "area.kitchen",
+    CONF_TEMP_ENTITIES: ["sensor.room1_temp"],
+}
+ROOM_2_DUPE_TEMP_OUTSIDE = {
+    CONF_AREA: "area.kitchen",
+    CONF_TEMP_ENTITIES: ["sensor.outside_temp"],
+}
+ROOM_2_DUPE_TEMP_BOILER = {
+    CONF_AREA: "area.kitchen",
+    CONF_TEMP_ENTITIES: ["sensor.inlet_temp"],
+}
+ROOM_2_DUPE_HUMIDITY_INSIDE = {
+    CONF_AREA: "area.kitchen",
+    CONF_TEMP_ENTITIES: ["sensor.room2_temp"],
+    CONF_HUMIDITY_ENTITY: "sensor.room1_humidity",
+}
+ROOM_2_DUPE_HUMIDITY_OUTSIDE = {
+    CONF_AREA: "area.kitchen",
+    CONF_TEMP_ENTITIES: ["sensor.room2_temp"],
+    CONF_HUMIDITY_ENTITY: "sensor.room1_humidity",
+}
+
+DUPLICATE_CASES = [
+    (ROOM_2_DUPE_AREA, "area_reused"),
+    (ROOM_2_DUPE_TEMP_INSIDE, "temp_sensor_reused"),
+    (ROOM_2_DUPE_TEMP_OUTSIDE, "temp_sensor_reused"),
+    (ROOM_2_DUPE_TEMP_BOILER, "temp_sensor_reused"),
+    (ROOM_2_DUPE_HUMIDITY_INSIDE, "humidity_sensor_reused"),
+    (ROOM_2_DUPE_HUMIDITY_OUTSIDE, "humidity_sensor_reused"),
+]
+
+
+@pytest.mark.parametrize("platform", PLATFORMS)
+@pytest.mark.parametrize("bad_room,expected_error", DUPLICATE_CASES)
+async def test_config_flow_duplicate_area(
+    hass: HomeAssistant, mock_setup_entry: AsyncMock, platform, bad_room, expected_error
+) -> None:
+    """Test the config flow with all optional inputs."""
+
+    # User Step
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": config_entries.SOURCE_USER}
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert not result["errors"]
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        MAIN_SETTINGS_MAXIMAL,
+    )
+    await hass.async_block_till_done()
+
+    # Boiler Settings Step
+    assert result["type"] is FlowResultType.FORM
+    assert not result["errors"]
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        BOILER_SETTINGS_MAXIMAL,
+    )
+    await hass.async_block_till_done()
+
+    # ROOM 1
+    assert result["type"] is FlowResultType.FORM
+    assert not result["errors"]
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        ROOM_1_SETTINGS_HUMIDITY,
+    )
+    await hass.async_block_till_done()
+
+    # ROOM 2
+    assert result["type"] is FlowResultType.FORM
+    assert not result["errors"]
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        bad_room,
+    )
+    await hass.async_block_till_done()
+    assert result["type"] is FlowResultType.FORM
+    assert expected_error in result["errors"]
 
 
 def get_suggested(schema, key):
