@@ -12,8 +12,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # store an object for your platforms to access
     entry.runtime_data = {}
 
-    # entry.runtime_data = ...
-
     # TODO Optionally validate config entry options before setting up platform
 
     await hass.config_entries.async_forward_entry_setups(entry, (Platform.CLIMATE,))
