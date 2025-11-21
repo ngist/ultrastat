@@ -81,13 +81,15 @@ async def async_setup_entry(
     climate_entities = []
     for room in config_entry.data["room_conf"]:
         base_name = config_entry.data[CONF_NAME]
-        area_name = room[CONF_AREA].rsplit(".", 1)[1]
-        name = f"{base_name} {area_name}"
+        _LOGGER.warning(
+            "Configuring thermostat UI for %s",
+            room[CONF_AREA],
+        )
+        name = f"{base_name} {room[CONF_AREA]}"
         entity_id = er.async_validate_entity_id(
             registry, format_entity_id(f"climate.{name}")
         )
-        formatted_area_name = format_entity_id(area_name)
-        unique_id = f"{config_entry.entry_id}_{formatted_area_name}"
+        unique_id = f"{config_entry.entry_id}_{room[CONF_AREA]}"
         climate_entities.append(
             UniStatClimateEntity(
                 hass,
@@ -306,7 +308,7 @@ class UniStatClimateEntity(ClimateEntity, RestoreEntity):
         if new_state is None or new_state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
             return
 
-        self._async_update_temp(new_state)
+        self._async_update_humidity(new_state)
         self.async_write_ha_state()
 
     async def _async_temperature_changed(
@@ -317,7 +319,7 @@ class UniStatClimateEntity(ClimateEntity, RestoreEntity):
         if new_state is None or new_state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
             return
 
-        self._async_update_humidity(new_state)
+        self._async_update_temp(new_state)
         self.async_write_ha_state()
 
     @callback

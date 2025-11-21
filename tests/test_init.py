@@ -31,12 +31,9 @@ async def test_setup_and_remove_config_entry(
     data["boiler_conf"] = BOILER_SETTINGS_MAXIMAL
 
     entity_ids = [
-        f"{platform}.my_unistat_{room[CONF_AREA].rsplit('.', 1)[1]}"
-        for room in data["room_conf"]
+        f"{platform}.my_unistat_{room[CONF_AREA]}" for room in data["room_conf"]
     ]
-    friendly_names = [
-        f"My UniStat {room[CONF_AREA].rsplit('.', 1)[1]}" for room in data["room_conf"]
-    ]
+    friendly_names = [f"My UniStat {room[CONF_AREA]}" for room in data["room_conf"]]
     # Setup the config entry
     config_entry = MockConfigEntry(
         data=data,

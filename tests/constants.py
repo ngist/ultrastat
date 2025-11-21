@@ -55,7 +55,7 @@ MAIN_SETTINGS_MAXIMAL = {
 
 BOILER_SETTINGS_MAXIMAL = {
     CONF_HEATING_CALL_ENTITY: ["switch.zone1"],
-    CONF_AREA: ["area.living_room", "area.kitchen"],
+    CONF_AREA: ["living_room", "kitchen"],
     "temp_sensors": {
         CONF_BOILER_INTLET_TEMP_ENTITY: "sensor.inlet_temp",
         CONF_BOILER_OUTLET_TEMP_ENTITY: "sensor.outlet_temp",
@@ -68,16 +68,16 @@ BOILER_SETTINGS_MAXIMAL = {
 }
 
 ROOM_1_SETTINGS = {
-    CONF_AREA: "area.living_room",
+    CONF_AREA: "living_room",
     CONF_TEMP_ENTITY: "sensor.room1_temp",
 }
 ROOM_2_SETTINGS = {
-    CONF_AREA: "area.kitchen",
+    CONF_AREA: "kitchen",
     CONF_TEMP_ENTITY: "sensor.room2_temp",
 }
 
 ROOM_3_SETTINGS = {
-    CONF_AREA: "area.bedroom",
+    CONF_AREA: "bedroom",
     CONF_TEMP_ENTITY: "sensor.room3_temp",
     CONF_HUMIDITY_ENTITY: "sensor.room3_humidity",
     CONF_HEATING: {
@@ -101,33 +101,33 @@ ROOM_3_SETTINGS = {
 # OFF Nominal
 
 ROOM_1_SETTINGS_HUMIDITY = {
-    CONF_AREA: "area.living_room",
+    CONF_AREA: "living_room",
     CONF_TEMP_ENTITY: "sensor.room1_temp",
     CONF_HUMIDITY_ENTITY: "sensor.room1_humidity",
 }
 ROOM_2_DUPE_AREA = {
-    CONF_AREA: "area.living_room",
+    CONF_AREA: "living_room",
     CONF_TEMP_ENTITY: "sensor.room2_temp",
 }
 ROOM_2_DUPE_TEMP_INSIDE = {
-    CONF_AREA: "area.kitchen",
+    CONF_AREA: "kitchen",
     CONF_TEMP_ENTITY: "sensor.room1_temp",
 }
 ROOM_2_DUPE_TEMP_OUTSIDE = {
-    CONF_AREA: "area.kitchen",
+    CONF_AREA: "kitchen",
     CONF_TEMP_ENTITY: "sensor.outside_temp",
 }
 ROOM_2_DUPE_TEMP_BOILER = {
-    CONF_AREA: "area.kitchen",
+    CONF_AREA: "kitchen",
     CONF_TEMP_ENTITY: "sensor.inlet_temp",
 }
 ROOM_2_DUPE_HUMIDITY_INSIDE = {
-    CONF_AREA: "area.kitchen",
+    CONF_AREA: "kitchen",
     CONF_TEMP_ENTITY: "sensor.room2_temp",
     CONF_HUMIDITY_ENTITY: "sensor.room1_humidity",
 }
 ROOM_2_DUPE_HUMIDITY_OUTSIDE = {
-    CONF_AREA: "area.kitchen",
+    CONF_AREA: "kitchen",
     CONF_TEMP_ENTITY: "sensor.room2_temp",
     CONF_HUMIDITY_ENTITY: "sensor.room1_humidity",
 }
