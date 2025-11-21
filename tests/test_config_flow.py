@@ -202,7 +202,7 @@ async def test_config_flow_duplicate_area(
     )
     await hass.async_block_till_done()
     assert result["type"] is FlowResultType.FORM
-    assert expected_error in result["errors"]
+    assert expected_error == result["errors"]["base"]
 
 
 def get_suggested(schema, key):

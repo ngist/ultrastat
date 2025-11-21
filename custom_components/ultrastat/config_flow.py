@@ -295,7 +295,7 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Configure boiler options."""
         errors = {}
-        reused_temp = set()
+        reused_temp = ""
         if user_input is not None:
             # Do validation
             boiler_temp_entities = []
@@ -317,7 +317,9 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                 if same_temp_entity_used
                 else set(boiler_temp_entities) & self.added_temp_sensors
             )
+
             if reused_temp:
+                reused_temp = list(reused_temp)[0]
                 errors["base"] = "temp_sensor_reused"
 
             if not errors:
@@ -331,7 +333,7 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             step_id="boiler",
             data_schema=BOILER_SCHEMA,
             errors=errors,
-            description_placeholders={"reused_temp": reused_temp},
+            description_placeholders={"temp_reused": reused_temp},
         )
 
     async def async_step_adjacency(
@@ -353,23 +355,23 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Captures configuration of thermal controls in each room."""
         errors = {}
-        reused_temp = set()
-        reused_humidity = set()
-        reused_area = set()
+        reused_temp = "_"
+        reused_humidity = "_"
+        reused_area = "_"
         if user_input is not None:
             # Do validation
             if user_input[CONF_AREA] in self.added_areas:
-                reused_area = set([user_input[CONF_AREA]])
-                errors["area_reused"] = "area_reused"
+                reused_area = user_input[CONF_AREA]
+                errors["base"] = "area_reused"
 
             if user_input[CONF_TEMP_ENTITY] in self.added_temp_sensors:
-                reused_temp = set([user_input[CONF_TEMP_ENTITY]])
-                errors["temp_sensor_reused"] = "temp_sensor_reused"
+                reused_temp = user_input[CONF_TEMP_ENTITY]
+                errors["base"] = "temp_sensor_reused"
 
             if CONF_HUMIDITY_ENTITY in user_input:
                 if user_input[CONF_HUMIDITY_ENTITY] in self.added_humidity_sensors:
                     reused_humidity = user_input[CONF_HUMIDITY_ENTITY]
-                    errors["humidity_sensor_reused"] = "humidity_sensor_reused"
+                    errors["base"] = "humidity_sensor_reused"
 
             if not errors:
                 # Input is valid, set data.
@@ -394,8 +396,8 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             data_schema=ROOM_SCHEMA,
             errors=errors,
             description_placeholders={
-                "reused_temp": reused_temp,
-                "reused_humidity": reused_humidity,
-                "reused_area": reused_area,
+                "temp_reused": reused_temp,
+                "humidity_reused": reused_humidity,
+                "area_reused": reused_area,
             },
         )

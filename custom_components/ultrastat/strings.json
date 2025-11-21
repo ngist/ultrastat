@@ -28,7 +28,7 @@
       },
       "room": {
         "title": "Room Setup",
-        "description": "Configure heating/cooling entities for x",
+        "description": "Configure heating/cooling entities for room",
         "data": {
           "area": "Area",
           "temp_entity": "Temperature Sensor",
