@@ -1,5 +1,5 @@
 from homeassistant.const import CONF_NAME, CONF_TEMPERATURE_UNIT, UnitOfTemperature
-from custom_components.ultrastat.const import (
+from custom_components.unistat.const import (
     CONF_AREA,
     CONF_BOILER_BTUH,
     CONF_BOILER_INTLET_TEMP_ENTITY,
@@ -29,7 +29,7 @@ from custom_components.ultrastat.const import (
 # NOMINAL
 
 MAIN_SETTINGS_MINIMAL = {
-    CONF_NAME: "My ultrastat",
+    CONF_NAME: "My unistat",
     CONF_NUM_ROOMS: 1,
     CONF_BOILER: False,
     # CONF_ADJACENCY: False, #TODO re-enable one adjacency is added back

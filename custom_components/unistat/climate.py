@@ -1,4 +1,4 @@
-"""Sensor platform for UltraStat integration."""
+"""Sensor platform for UniStat integration."""
 
 import logging
 from typing import Dict
@@ -71,7 +71,7 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Initialize UltraStat config entry."""
+    """Initialize UniStat config entry."""
 
     def format_entity_id(name: str):
         return name.lower().replace(" ", "_").replace("-", "_")
@@ -144,7 +144,7 @@ class UniStatClimateEntity(ClimateEntity, RestoreEntity):
         climate_entity_id: str | None = None,
         presets: Dict[str, Dict] | None = None,
     ) -> None:
-        """Initialize ultrastat Sensor."""
+        """Initialize unistat Sensor."""
         super().__init__()
 
         # Set builtin attributes

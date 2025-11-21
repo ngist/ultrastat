@@ -1,4 +1,4 @@
-"""Sensor platform for UltraStat integration."""
+"""Sensor platform for UniStat integration."""
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
@@ -13,7 +13,7 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Initialize UltraStat config entry."""
+    """Initialize UniStat config entry."""
     registry = er.async_get(hass)
     # Validate + resolve entity registry id to entity_id
     entity_id = er.async_validate_entity_id(
@@ -23,14 +23,14 @@ async def async_setup_entry(
     name = config_entry.title
     unique_id = config_entry.entry_id
 
-    async_add_entities([ultrastatSensorEntity(unique_id, name, entity_id)])
+    async_add_entities([unistatSensorEntity(unique_id, name, entity_id)])
 
 
-class ultrastatSensorEntity(SensorEntity):
-    """ultrastat Sensor."""
+class unistatSensorEntity(SensorEntity):
+    """unistat Sensor."""
 
     def __init__(self, unique_id: str, name: str, wrapped_entity_id: str) -> None:
-        """Initialize ultrastat Sensor."""
+        """Initialize unistat Sensor."""
         super().__init__()
         self._wrapped_entity_id = wrapped_entity_id
         self._attr_name = name

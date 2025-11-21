@@ -1,8 +1,8 @@
-"""Constants for the UltraStat integration."""
+"""Constants for the UniStat integration."""
 
 from enum import StrEnum
 
-DOMAIN = "ultrastat"
+DOMAIN = "unistat"
 
 # General Purpose (used multiple forms)
 CONF_TEMP_ENTITY = "temp_entity"

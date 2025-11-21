@@ -1,4 +1,4 @@
-"""Test the UltraStat integration."""
+"""Test the UniStat integration."""
 
 from .constants import (
     MAIN_SETTINGS_MAXIMAL,
@@ -7,7 +7,7 @@ from .constants import (
     ROOM_2_SETTINGS,
     ROOM_3_SETTINGS,
 )
-from custom_components.ultrastat.const import (
+from custom_components.unistat.const import (
     CONF_AREA,
     DOMAIN,
 )

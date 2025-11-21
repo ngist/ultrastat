@@ -1,4 +1,4 @@
-"""Config flow for the UltraStat integration."""
+"""Config flow for the UniStat integration."""
 
 from typing import Any
 
@@ -254,7 +254,7 @@ def gen_adjacency_schema(num_rooms: int):
 
 
 class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
-    """Handle a config or options flow for UltraStat."""
+    """Handle a config or options flow for UniStat."""
 
     VERSION = 1
     MINOR_VERSION = 1

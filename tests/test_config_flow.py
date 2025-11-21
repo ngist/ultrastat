@@ -1,4 +1,4 @@
-"""Test the UltraStat config flow."""
+"""Test the UniStat config flow."""
 
 from unittest.mock import AsyncMock
 
@@ -17,7 +17,7 @@ from .constants import (
     ROOM_2_DUPE_TEMP_BOILER,
     ROOM_2_DUPE_TEMP_INSIDE,
 )
-from custom_components.ultrastat.const import (
+from custom_components.unistat.const import (
     DOMAIN,
 )
 import pytest
@@ -60,7 +60,7 @@ async def test_minimal_config_flow(
     await hass.async_block_till_done()
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == "My ultrastat"
+    assert result["title"] == "My unistat"
     expected = MAIN_SETTINGS_MINIMAL.copy()
     expected["room_conf"] = [ROOM_1_SETTINGS]
     expected["use_adjacency"] = False
@@ -71,7 +71,7 @@ async def test_minimal_config_flow(
     config_entry = hass.config_entries.async_entries(DOMAIN)[0]
     assert config_entry.data == expected
     assert config_entry.options == {}
-    assert config_entry.title == "My ultrastat"
+    assert config_entry.title == "My unistat"
 
 
 @pytest.mark.parametrize("platform", PLATFORMS)

@@ -1,10 +1,10 @@
 {
-  "domain": "ultrastat",
-  "name": "UltraStat",
+  "domain": "unistat",
+  "name": "UniStat",
   "codeowners": ["@ngist"],
   "config_flow": true,
   "dependencies": ["utility_meter", "sensor", "switch", "climate"],
-  "documentation": "https://github.com/ngist/ultrastat",
+  "documentation": "https://github.com/ngist/unistat",
   "integration_type": "helper",
   "iot_class": "calculated",
   "version": "0.0.1-alpha.1"

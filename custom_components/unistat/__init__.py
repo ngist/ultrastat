@@ -1,4 +1,4 @@
-"""The UltraStat integration."""
+"""The UniStat integration."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from homeassistant.core import HomeAssistant
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up UltraStat from a config entry."""
+    """Set up UniStat from a config entry."""
     # store an object for your platforms to access
     entry.runtime_data = {}
 

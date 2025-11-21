@@ -1,1 +1,1 @@
-"""Tests for the UltraStat integration."""
+"""Tests for the UniStat integration."""
