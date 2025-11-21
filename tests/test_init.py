@@ -37,7 +37,6 @@ async def test_setup_and_remove_config_entry(
     friendly_names = [
         f"My UniStat {room[CONF_AREA].rsplit('.', 1)[1]}" for room in data["room_conf"]
     ]
-    print(entity_ids)
     # Setup the config entry
     config_entry = MockConfigEntry(
         data=data,
@@ -58,13 +57,10 @@ async def test_setup_and_remove_config_entry(
         ),
         "max_temp": 29.4,
         "min_temp": 15.6,
-        "target_temp_high": 22.8,
-        "target_temp_low": 21.7,
         "target_temp_step": 1,
         "temperature": 22.2,
         "supported_features": (
             ClimateEntityFeature.TARGET_TEMPERATURE
-            | ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
             | ClimateEntityFeature.TURN_ON
             | ClimateEntityFeature.TURN_OFF
         ),
